@@ -5,5 +5,5 @@
 #leave out the environment settings
 .env
 
-
-
+#leave out cached images
+cache/*

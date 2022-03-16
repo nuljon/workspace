@@ -218,7 +218,8 @@ from oscar.defaults import *
 # Meta
 # ====
 
-OSCAR_SHOP_TAGLINE = ''
+OSCAR_SHOP_NAME = 'ATKC'
+OSCAR_SHOP_TAGLINE = 'rare and hard to find comic books and collectibles'
 
 OSCAR_RECENTLY_VIEWED_PRODUCTS = 20
 OSCAR_ALLOW_ANON_CHECKOUT = True
