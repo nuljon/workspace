@@ -1,0 +1,5 @@
+{% load static %}
+<div class="col-sm-6 h1"><a href="{{ homepage_url }}">{% block brand_name %}
+    <img src= "{% static 'oscar/img/logo.png' %}" alt="All The King's Comics logo">
+    {% endblock %}{% block brand_title %}{{ shop_name }}{% endblock %}</a><small> {{ shop_tagline }}</small></div>
+

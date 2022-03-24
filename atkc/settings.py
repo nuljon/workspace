@@ -15,6 +15,7 @@ from pathlib import Path
 import os
 import environ
 
+
 env = environ.Env(
     DEBUG = (bool, False),
     SECRET_KEY = (str, 'NOT-secure'),
@@ -25,7 +26,7 @@ env = environ.Env(
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -56,7 +57,7 @@ INSTALLED_APPS = [
     'oscar.apps.checkout.apps.CheckoutConfig',
     'oscar.apps.address.apps.AddressConfig',
     'oscar.apps.shipping.apps.ShippingConfig',
-    'oscar.apps.catalogue.apps.CatalogueConfig',
+    'apps.catalogue.apps.CatalogueConfig', # manage.py oscar_fork_app 
     'oscar.apps.catalogue.reviews.apps.CatalogueReviewsConfig',
     'oscar.apps.communication.apps.CommunicationConfig',
     'oscar.apps.partner.apps.PartnerConfig',
@@ -90,16 +91,18 @@ INSTALLED_APPS = [
     'django_tables2',
 ]
 
-SITE_ID = 0 + env('SITE_ID')
+SITE_ID = 1
 
 MIDDLEWARE = env.list('MIDDLEWARE')
 
 ROOT_URLCONF = 'atkc.urls'
 
+location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', x)
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [ location('templates'), os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -109,12 +112,27 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'oscar.apps.search.context_processors.search_form',
                 'oscar.apps.checkout.context_processors.checkout',
-                'oscar.apps.communication.notifications.context_processors.notifications',
-                'oscar.core.context_processors.metadata',
-            ],
+                'oscar.apps.communication.notifications.context_processors.notifications','oscar.core.context_processors.metadata',
+                ],
         },
     },
 ]
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.10/howto/static-files/
+
+STATIC_URL = 'static/'
+
+# Add these new linesSTATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+MEDIA_URL = 'media/'
+
 
 WSGI_APPLICATION = env('WSGI_APPLICATION')
 
@@ -219,10 +237,21 @@ from oscar.defaults import *
 # ====
 
 OSCAR_SHOP_NAME = 'ATKC'
+OSCAR_HOMEPAGE = reverse_lazy('catalogue:index')
 OSCAR_SHOP_TAGLINE = 'rare and hard to find comic books and collectibles'
+OSCAR_DEFAULT_CURRENCY = 'USD'
 
 OSCAR_RECENTLY_VIEWED_PRODUCTS = 20
 OSCAR_ALLOW_ANON_CHECKOUT = True
+OSCAR_INITIAL_ORDER_STATUS = 'Pending'
+OSCAR_INITIAL_LINE_STATUS = 'Pending'
+OSCAR_ORDER_STATUS_PIPELINE = {
+    'Pending': ('Processing', 'Cancelled',),
+    'Processing': ('Shipping', 'Cancelled',),
+    'Shipping': ('Delivered', 'Cancelled'),
+    'Delivered': (),
+    'Cancelled': (),
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -236,15 +265,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
-STATIC_URL = '/static/'
-
-MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

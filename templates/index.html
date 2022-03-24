@@ -1,0 +1,20 @@
+{% load flatpages %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>{{ flatpage.title }}</title>
+</head>
+<body>
+    <img src= "{% static 'atkc/img/logo.png' %}" alt="All The King's Comics logo">
+    {% get_flatpages as flatpages %}
+    <ul>
+        {% for page in flatpages %}
+            <li><a href="{{ page.url }}">{{ page.title }}</a></li>
+        {% endfor %}
+    </ul>
+
+{{ flatpage.content }}
+</body>
+</html>
